@@ -20,15 +20,18 @@ class User {
 
   static User fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
-
+    if (snapshot == null) {
+      throw Exception('No data available for user');
+    }
     return User(
-      username: snapshot["username"],
-      uid: snapshot["uid"],
-      email: snapshot["email"],
-      photoUrl: snapshot["photoUrl"],
-      bio: snapshot["bio"],
-      followers: snapshot["followers"],
-      following: snapshot["following"],
+      username: snapshot["username"] ?? 'N/A', // 예외 처리를 위해 기본값 제공
+      uid: snapshot["uid"] ?? 'N/A',
+      email: snapshot["email"] ?? 'N/A',
+      photoUrl: snapshot["photoUrl"] ??
+          'https://i.stack.imgur.com/l60Hf.png', // 기본 이미지 URL
+      bio: snapshot["bio"] ?? '',
+      followers: List.from(snapshot["followers"] ?? []),
+      following: List.from(snapshot["following"] ?? []),
     );
   }
 

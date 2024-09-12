@@ -19,7 +19,6 @@ class AuthMethods {
   }
 
   // Signing Up User
-
   Future<String> signUpUser({
     required String email,
     required String password,
@@ -29,31 +28,41 @@ class AuthMethods {
   }) async {
     String res = "Some error Occurred";
     try {
-      if (email.isNotEmpty ||
-          password.isNotEmpty ||
-          username.isNotEmpty ||
-          bio.isNotEmpty ||
+      // 입력 필드가 모두 채워졌는지 확인
+      if (email.isNotEmpty &&
+          password.isNotEmpty &&
+          username.isNotEmpty &&
+          bio.isNotEmpty &&
           file != null) {
-        // registering user in auth with email and password
+        // Firebase Authentication에 사용자 등록
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
 
-        String photoUrl =
-            await StorageMethods().uploadImageToStorage('profilePics', file, false);
+        // 프로필 사진 업로드
+        String photoUrl = "";
+        try {
+          photoUrl = await StorageMethods()
+              .uploadImageToStorage('profilePics', file, false);
+          print("Image uploaded successfully: $photoUrl");
+        } catch (e) {
+          print("Error uploading image: $e");
+          return "Error uploading image";
+        }
 
+        // 사용자 정보 생성 (Firebase Storage에서 반환된 photoUrl 사용)
         model.User user = model.User(
           username: username,
           uid: cred.user!.uid,
-          photoUrl: photoUrl,
+          photoUrl: photoUrl, // 이미지 URL 포함
           email: email,
           bio: bio,
           followers: [],
           following: [],
         );
 
-        // adding user in our database
+        // Firestore에 사용자 정보 저장
         await _firestore
             .collection("users")
             .doc(cred.user!.uid)
@@ -64,6 +73,7 @@ class AuthMethods {
         res = "Please enter all the fields";
       }
     } catch (err) {
+      // 오류 처리
       return err.toString();
     }
     return res;
@@ -76,8 +86,8 @@ class AuthMethods {
   }) async {
     String res = "Some error Occurred";
     try {
-      if (email.isNotEmpty || password.isNotEmpty) {
-        // logging in user with email and password
+      if (email.isNotEmpty && password.isNotEmpty) {
+        // 이메일과 비밀번호로 로그인
         await _auth.signInWithEmailAndPassword(
           email: email,
           password: password,

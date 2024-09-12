@@ -32,9 +32,25 @@ class _SignupScreenState extends State<SignupScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _usernameController.dispose();
+    _bioController.dispose(); // 추가
   }
 
   void signUpUser() async {
+    // 필드가 비어있는지 확인
+    if (_emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _usernameController.text.isEmpty ||
+        _bioController.text.isEmpty) {
+      showSnackBar(context, "Please fill in all fields");
+      return;
+    }
+
+    // 이미지를 선택하지 않은 경우
+    if (_image == null) {
+      showSnackBar(context, "Please select a profile image");
+      return;
+    }
+
     // set loading to true
     setState(() {
       _isLoading = true;
@@ -42,12 +58,14 @@ class _SignupScreenState extends State<SignupScreen> {
 
     // signup user using our authmethodds
     String res = await AuthMethods().signUpUser(
-        email: _emailController.text,
-        password: _passwordController.text,
-        username: _usernameController.text,
-        bio: _bioController.text,
-        file: _image!);
-    // if string returned is sucess, user has been created
+      email: _emailController.text,
+      password: _passwordController.text,
+      username: _usernameController.text,
+      bio: _bioController.text,
+      file: _image!,
+    );
+
+    // if string returned is success, user has been created
     if (res == "success") {
       setState(() {
         _isLoading = false;
@@ -93,32 +111,22 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(
-                flex: 2,
-                child: Container(),
-              ),
-              SvgPicture.asset(
-                'assets/ic_instagram.svg',
-                color: primaryColor,
-                height: 64,
-              ),
-              const SizedBox(
-                height: 64,
-              ),
+              Flexible(flex: 2, child: Container()),
+              SvgPicture.asset('assets/ic_instagram.svg',
+                  color: primaryColor, height: 64),
+              const SizedBox(height: 64),
               Stack(
                 children: [
                   _image != null
                       ? CircleAvatar(
                           radius: 64,
                           backgroundImage: MemoryImage(_image!),
-                          backgroundColor: Colors.red,
-                        )
+                          backgroundColor: Colors.red)
                       : const CircleAvatar(
                           radius: 64,
                           backgroundImage: NetworkImage(
                               'https://i.stack.imgur.com/l60Hf.png'),
-                          backgroundColor: Colors.red,
-                        ),
+                          backgroundColor: Colors.red),
                   Positioned(
                     bottom: -10,
                     left: 80,
@@ -129,42 +137,28 @@ class _SignupScreenState extends State<SignupScreen> {
                   )
                 ],
               ),
-              const SizedBox(
-                height: 24,
-              ),
+              const SizedBox(height: 24),
               TextFieldInput(
-                hintText: 'Enter your username',
-                textInputType: TextInputType.text,
-                textEditingController: _usernameController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
+                  hintText: 'Enter your username',
+                  textInputType: TextInputType.text,
+                  textEditingController: _usernameController),
+              const SizedBox(height: 24),
               TextFieldInput(
-                hintText: 'Enter your email',
-                textInputType: TextInputType.emailAddress,
-                textEditingController: _emailController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
+                  hintText: 'Enter your email',
+                  textInputType: TextInputType.emailAddress,
+                  textEditingController: _emailController),
+              const SizedBox(height: 24),
               TextFieldInput(
-                hintText: 'Enter your password',
-                textInputType: TextInputType.text,
-                textEditingController: _passwordController,
-                isPass: true,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
+                  hintText: 'Enter your password',
+                  textInputType: TextInputType.text,
+                  textEditingController: _passwordController,
+                  isPass: true),
+              const SizedBox(height: 24),
               TextFieldInput(
-                hintText: 'Enter your bio',
-                textInputType: TextInputType.text,
-                textEditingController: _bioController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
+                  hintText: 'Enter your bio',
+                  textInputType: TextInputType.text,
+                  textEditingController: _bioController),
+              const SizedBox(height: 24),
               InkWell(
                 onTap: signUpUser,
                 child: Container(
@@ -178,44 +172,26 @@ class _SignupScreenState extends State<SignupScreen> {
                     color: blueColor,
                   ),
                   child: !_isLoading
-                      ? const Text(
-                          'Sign up',
-                        )
-                      : const CircularProgressIndicator(
-                          color: primaryColor,
-                        ),
+                      ? const Text('Sign up')
+                      : const CircularProgressIndicator(color: primaryColor),
                 ),
               ),
-              const SizedBox(
-                height: 12,
-              ),
-              Flexible(
-                flex: 2,
-                child: Container(),
-              ),
+              const SizedBox(height: 12),
+              Flexible(flex: 2, child: Container()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: const Text(
-                      'Already have an account?',
-                    ),
+                    child: const Text('Already have an account?'),
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    ),
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const LoginScreen())),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: const Text(
-                        ' Login.',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: const Text(' Login.',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
