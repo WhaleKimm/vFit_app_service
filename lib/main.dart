@@ -9,6 +9,7 @@ import 'package:instagram_clone_flutter/responsive/web_screen_layout.dart';
 import 'package:instagram_clone_flutter/screens/login_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:provider/provider.dart';
+import 'providers/virtual_tryon_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => UserProvider(),
         ),
+        ChangeNotifierProvider(create: (_) => VirtualTryOnProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
